@@ -1,0 +1,14 @@
+{
+    "name": "narmafzam/custom-table",
+    "license": "proprietary",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "CustomTable\\": "src/CustomTable"
+        }
+    },
+    "require": {
+        "php": "^7.2"
+    },
+    "minimum-stability": "dev"
+}
