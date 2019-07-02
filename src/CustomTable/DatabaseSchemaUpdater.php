@@ -2,14 +2,12 @@
 
 namespace CustomTable;
 
-use stdClass;
-
 class DatabaseSchemaUpdater
 {
     /**
      * @var DataBase Database object
      */
-    public $db;
+    public $database;
 
     /**
      * @var DataBaseSchema Database Schema object
@@ -17,23 +15,23 @@ class DatabaseSchemaUpdater
     public $schema;
 
     /**
-     * CT_DataBase_Schema_Updater constructor.
-     *
-     * @param DataBase $db
+     * DatabaseSchemaUpdater constructor
+     * .
+     * @param Database $database
      */
-    public function __construct( $db ) {
+    public function __construct( Database $database ) {
 
-        $this->db = $db;
-        $this->schema = $db->getSchema();
+        $this->database = $database;
+        $this->schema   = $database->getSchema();
 
     }
 
     /**
      * @return DataBase
      */
-    public function getDb(): DataBase
+    public function getDatabase(): DataBase
     {
-        return $this->db;
+        return $this->database;
     }
 
     /**
@@ -46,21 +44,21 @@ class DatabaseSchemaUpdater
 
     public function run() {
 
-        if( $this->schema ) {
+        if( $this->getSchema() ) {
 
             $alters = array();
 
             // Get schema fields and current table definition to being compared
-            $schema_fields = $this->schema->fields;
+            $schema_fields = $this->getSchema()->getFields();
             $current_schema_fields = array();
 
             // Get a description of current schema
-            $schema_description = $this->getDb()->db->getResults( "DESCRIBE {$this->getDb()->table_name}" );
+            $schema_description = $this->getDatabase()->getDatabase()->getResults( "DESCRIBE {$this->getDatabase()->getTableName()}" );
 
             // Check stored schema with configured fields to check field deletions and build a custom array to be used after
             foreach( $schema_description as $field ) {
 
-                $current_schema_fields[$field->Field] = $this->object_field_to_array( $field );
+                $current_schema_fields[$field->Field] = $this->objectFieldToArray( $field );
 
                 if( ! isset( $schema_fields[$field->Field] ) ) {
                     // A field to be removed
@@ -108,7 +106,7 @@ class DatabaseSchemaUpdater
 
                 switch( $alter['action'] ) {
                     case 'ADD':
-                        $sql .= "ALTER TABLE {$this->ct_db->table_name} ADD " . $this->schema->field_array_to_schema( $column, $schema_fields[$column] ) . "; ";
+                        $sql .= "ALTER TABLE {$this->getDatabase()->getTableName()} ADD " . $this->getSchema()->fieldArrayToSchema( $column, $schema_fields[$column] ) . "; ";
                         break;
                     case 'ADD INDEX':
 
@@ -125,26 +123,26 @@ class DatabaseSchemaUpdater
                         }
 
                         // Prevent errors if index already exists
-                        drop_index( $this->ct_db->table_name, $column );
+                        drop_index( $this->getDatabase()->getTableName(), $column );
 
                         // For indexes query should be executed directly
-                        $this->ct_db->db->query( "ALTER TABLE {$this->ct_db->table_name} ADD INDEX {$add_index_query}" );
+                        $this->getDatabase()->getDatabase()->query( "ALTER TABLE {$this->getDatabase()->getTableName()} ADD INDEX {$add_index_query}" );
                         break;
                     case 'MODIFY':
-                        $sql .= "ALTER TABLE {$this->ct_db->table_name} MODIFY " . $this->schema->field_array_to_schema( $column, $schema_fields[$column] ) . "; ";
+                        $sql .= "ALTER TABLE {$this->getDatabase()->getTableName()} MODIFY " . $this->getSchema()->fieldArrayToSchema( $column, $schema_fields[$column] ) . "; ";
                         break;
                     case 'DROP':
-                        $sql .= "ALTER TABLE {$this->ct_db->table_name} DROP COLUMN {$column}; ";
+                        $sql .= "ALTER TABLE {$this->getDatabase()->getTableName()} DROP COLUMN {$column}; ";
 
                         // Better use a built-in function here?
-                        //maybe_drop_column( $this->ct_db->table_name, $column, "ALTER TABLE {$this->ct_db->table_name} DROP COLUMN {$column}" );
+//                        maybe_drop_column( $this->getDatabase()->getTableName(), $column, "ALTER TABLE {$this->getDataBase()->getTableName()} DROP COLUMN {$column}" );
                         break;
                     case 'DROP INDEX':
                         // For indexes query should be executed directly
-                        //$this->ct_db->db->query( "ALTER TABLE {$this->ct_db->table_name} DROP INDEX {$column}" );
+//                        $this->getDatabase()->getDatabase()->query( "ALTER TABLE {$this->getDatabase()->getTableName()} DROP INDEX {$column}" );
 
                         // Use a built-in function for safe drop
-                        drop_index( $this->ct_db->table_name, $column );
+                        drop_index( $this->getDatabase()->getTableName(), $column );
                         break;
 
                 }
@@ -152,7 +150,7 @@ class DatabaseSchemaUpdater
 
             if( ! empty( $sql ) ) {
                 // Execute the SQL
-                $updated = $this->ct_db->db->query( $sql );
+                $updated = $this->getDatabase()->getDatabase()->query( $sql );
 
                 // Was anything updated?
                 return ! empty( $updated );
@@ -164,7 +162,7 @@ class DatabaseSchemaUpdater
 
     }
 
-    public function object_field_to_array( $field ) {
+    public function objectFieldToArray( $field ) {
 
         $field_args = array(
             'type'              => '',

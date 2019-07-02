@@ -7,17 +7,16 @@ class TableMeta
     /**
      * Table key.
      *
-     * @since 1.0.0
-     * @access public
      * @var string $name
      */
     public $name;
 
     /**
      * Table Meta database.
-     * @var DatabaseSchema $db
+     *
+     * @var Database $database
      */
-    public $db;
+    public $database;
 
     /**
      * @var Table $table
@@ -25,7 +24,7 @@ class TableMeta
     public $table;
 
     /**
-     * CT_Table_Meta constructor.
+     * TableMeta constructor.
      * @param Table $table
      */
     public function __construct( $table ) {
@@ -33,9 +32,9 @@ class TableMeta
         $this->table = $table;
         $this->name  = $this->table->name . '_meta';
 
-        $this->db = new DatabaseSchema( $this->name, array(
+        $this->database = new Database( $this->getName(), array(
             'version' => 1,
-            'global' => $this->table->db->global,
+            'global' => $this->getTable()->getDatabase()->isGlobal(),
             'schema' => array(
                 'meta_id' => array(
                     'type' => 'bigint',
@@ -45,7 +44,7 @@ class TableMeta
                     'auto_increment' => true,
                     'primary_key' => true
                 ),
-                $this->table->db->primary_key => array(
+                $this->getTable()->getDatabase()->getPrimaryKey() => array(
                     'type' => 'bigint',
                     'length' => 20,
                     'unsigned' => true,
@@ -68,5 +67,29 @@ class TableMeta
             )
         ) );
 
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return Table
+     */
+    public function getTable(): Table
+    {
+        return $this->table;
+    }
+
+    /**
+     * @return Database
+     */
+    public function getDatabase(): Database
+    {
+        return $this->database;
     }
 }

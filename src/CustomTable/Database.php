@@ -4,38 +4,33 @@ namespace CustomTable;
 
 class Database
 {
-    protected $name = '';
-
-    protected $primaryKey = '';
-    protected $version = 0;
-    protected $global = false;
-    protected $databaseVersionKey = '';
-    protected $databaseVersion = 0;
-    protected $tableName = '';
-    protected $schema = '';
-    protected $charsetCollation = '';
-    protected $database = false;
+    protected $name                 = '';
+    protected $global               = false;
+    protected $schema               = '';
+    protected $version              = 0;
+    protected $database             = false;
+    protected $tableName            = '';
+    protected $primaryKey           = '';
+    protected $databaseVersion      = 0;
+    protected $charsetCollation     = '';
+    protected $databaseVersionKey   = '';
 
     public function __construct( $name, $args ) {
 
-        $this->name = $name;
-
-        $this->primary_key = ( isset( $args['primary_key'] ) ) ? $args['primary_key'] : '';
-
-        $this->version = ( isset( $args['version'] ) ) ? $args['version'] : 1;
-
-        $this->global = ( isset( $args['global'] ) && $args['global'] === true ) ? true : false;
-
-        $this->schema = ( isset( $args['schema'] ) ) ? new DataBaseSchema( $args['schema'] ) : '';
+        $this->name         = $name;
+        $this->primaryKey   = ( isset( $args['primary_key'] ) ) ? $args['primary_key'] : '';
+        $this->version      = ( isset( $args['version'] ) ) ? $args['version'] : 1;
+        $this->global       = ( isset( $args['global'] ) && $args['global'] === true ) ? true : false;
+        $this->schema       = ( isset( $args['schema'] ) ) ? new DataBaseSchema( $args['schema'] ) : '';
 
         // If not primary key given, then look at out schema
-        if( $this->schema && ! $this->primary_key ) {
+        if( $this->getSchema() && ! $this->getPrimaryKey() ) {
 
             foreach( $this->schema->fields as $field_id => $field_args ) {
 
                 if( $field_args['primary_key'] === true ) {
 
-                    $this->primary_key = $field_id;
+                    $this->setPrimaryKey($field_id);
                     break;
 
                 }
@@ -45,24 +40,24 @@ class Database
         }
 
         // Bail if no database object or table name
-        if ( empty( $GLOBALS['wpdb'] ) || empty( $this->name ) ) {
+        if ( empty( $GLOBALS['wpdb'] ) || empty( $this->getName() ) ) {
             return;
         }
 
         // Setup the database
-        $this->setDatabase();
+        $this->setupDatabase();
 
         // Get the version of he table currently in the database
-        $this->getDatabaseVersion();
+        $this->setupDatabaseVersion();
 
         // Add the table to the object
         $this->setWpDatabaseTables();
 
         // Setup the database schema
-        $this->set_schema();
+        $this->setupSchema();
 
         // Add hooks to WordPress actions
-        $this->add_hooks();
+        $this->addHooks();
     }
 
     public function getName()
@@ -78,6 +73,11 @@ class Database
     public function getPrimaryKey()
     {
         return $this->primaryKey;
+    }
+
+    public function setPrimaryKey($primaryKey): void
+    {
+        $this->primaryKey = $primaryKey;
     }
 
     public function getVersion()
@@ -105,11 +105,9 @@ class Database
         return $this->databaseVersion;
     }
 
-    public function setDatabaseVersion(): void
+    public function setDatabaseVersion($databaseVersion): void
     {
-        $this->databaseVersion = ( true === $this->isGlobal() )
-            ? get_network_option( null, $this->getDatabaseVersionKey(), false )
-            :         get_option(       $this->getDatabaseVersionKey(), false );
+        $this->databaseVersion = $databaseVersion;
     }
 
     public function getTableName()
@@ -142,18 +140,6 @@ class Database
         return $this->database;
     }
 
-    private function setDatabase(): void
-    {
-        // Setup database
-        $this->database = $GLOBALS['wpdb'];
-        $this->setName(sanitize_key( $this->getName() ));
-
-        // Maybe create database key
-        if ( empty( $this->getDatabaseVersionKey() ) ) {
-            $this->setDatabaseVersionKey("wpdb_{$this->getName()}_version");
-        }
-    }
-
     protected function upgrade() {
         $schemaUpdater = new DataBaseSchemaUpdater( $this );
         $schemaUpdater->run();
@@ -170,10 +156,10 @@ class Database
         $this->setWpDatabaseTables();
     }
 
-    public function maybe_upgrade() {
+    public function maybeUpgrade() {
 
         // Bail if no upgrade needed
-        if ( version_compare( (int) $this->db_version, (int) $this->version, '>=' ) && $this->exists() ) {
+        if ( version_compare( (int) $this->getDatabaseVersion(), (int) $this->getVersion(), '>=' ) && $this->exists() ) {
             return;
         }
 
@@ -183,7 +169,7 @@ class Database
         }
 
         // Bail if global and upgrading global tables is not allowed
-        if ( ( true === $this->global ) && ! wp_should_upgrade_global_tables() ) {
+        if ( ( true === $this->isGlobal() ) && ! wp_should_upgrade_global_tables() ) {
             return;
         }
 
@@ -194,26 +180,26 @@ class Database
 
         // Set the database version
         if ( $this->exists() ) {
-            $this->set_db_version();
+            $this->setupDatabaseVersion();
         }
     }
 
     public function get( $id ) {
 
-        return $this->db->get_row( $this->db->prepare( "SELECT * FROM {$this->table_name} WHERE {$this->primary_key} = %s", $id ) );
+        return $this->getDatabase()->get_row( $this->getDatabase()->prepare( "SELECT * FROM {$this->getTableName()} WHERE {$this->getPrimaryKey()} = %s", $id ) );
 
     }
 
     public function query( $args = array(), $output = OBJECT ) {
 
-        return $this->db->get_results( "SELECT * FROM {$this->table_name}" );
+        return $this->getDatabase()->get_results( "SELECT * FROM {$this->getTableName()}" );
 
     }
 
     public function insert( $data ) {
 
-        if( $this->db->insert( $this->table_name, $data ) ) {
-            return $this->db->insert_id;
+        if( $this->getDatabase()->insert( $this->getTableName(), $data ) ) {
+            return $this->getDatabase()->insert_id;
         }
 
         return false;
@@ -223,7 +209,7 @@ class Database
     public function update( $data, $where ) {
 
         $table_data = array();
-        $schema_fields = array_keys( $this->schema->fields );
+        $schema_fields = array_keys( $this->getSchema()->getFields());
 
         // Filter extra data to prevent insert data outside table schema
         foreach( $data as $field => $value ) {
@@ -234,13 +220,18 @@ class Database
             $table_data[$field] = $value;
         }
 
-        return $this->db->update( $this->table_name, $table_data, $where );
+        return $this->getDatabase()->update( $this->getTableName(), $table_data, $where );
 
     }
 
     public function delete( $value ) {
 
-        return $this->db->query( $this->db->prepare( "DELETE FROM {$this->table_name} WHERE {$this->primary_key} = %s", $value ) );
+        return $this->getDatabase()->query( $this->getDatabase()->prepare( "DELETE FROM {$this->getTableName()} WHERE {$this->getPrimaryKey()} = %s", $value ) );
+
+    }
+
+    protected function setupSchema()
+    {
 
     }
 
@@ -249,8 +240,8 @@ class Database
         // Global
         if ( true === $this->isGlobal() ) {
             $prefix = $this->getDatabase()->get_blog_prefix( 0 );
-            $this->getDatabase()->{$this->getName()} = "{$prefix}{$this->name}";
-            $this->getDatabase()->ms_global_tables[] = $this->name;
+            $this->getDatabase()->{$this->getName()} = "{$prefix}{$this->getName()}";
+            $this->getDatabase()->ms_global_tables[] = $this->getName();
 
             // Site
         } else {
@@ -273,22 +264,39 @@ class Database
         }
     }
 
-    private function
+    private function setupDatabase()
+    {
+        // Setup database
+        $this->database = $GLOBALS['wpdb'];
+        $this->setName(sanitize_key( $this->getName() ));
+
+        // Maybe create database key
+        if ( empty( $this->getDatabaseVersionKey() ) ) {
+            $this->setDatabaseVersionKey("wpdb_{$this->getName()}_version");
+        }
+    }
+
+    private function setupDatabaseVersion()
+    {
+        $this->setDatabaseVersion(( true === $this->isGlobal() )
+            ? get_network_option( null, $this->getDatabaseVersionKey(), false )
+            :         get_option(       $this->getDatabaseVersionKey(), false ));
+    }
 
     private function addHooks() {
 
         // Activation hook
-        register_activation_hook( __FILE__, array( $this, 'maybe_upgrade' ) );
+        register_activation_hook( __FILE__, array( $this, 'maybeUpgrade' ) );
 
         // Add table to the global database object
-        add_action( 'switch_blog', array( $this, 'switch_blog'   ) );
-        add_action( 'admin_init',  array( $this, 'maybe_upgrade' ) );
+        add_action( 'switch_blog', array( $this, 'switchBlog'   ) );
+        add_action( 'admin_init',  array( $this, 'maybeUpgrade' ) );
     }
 
     private function create() {
 
         // Run CREATE TABLE query
-        $created = dbDelta( array( "CREATE TABLE {$this->table_name} ( {$this->schema} ) {$this->charset_collation};" ) );
+        $created = dbDelta( array( "CREATE TABLE {$this->getTableName()} ( {$this->getSchema()} ) {$this->getCharsetCollation()};" ) );
 
         // Was anything created?
         return ! empty( $created );
@@ -296,9 +304,9 @@ class Database
 
     private function exists() {
 
-        $table_exist = $this->db->get_var( $this->db->prepare(
+        $table_exist = $this->getDatabase()->get_var( $this->getDatabase()->prepare(
             "SHOW TABLES LIKE %s",
-            $this->db->esc_like( $this->table_name )
+            $this->getDatabase()->esc_like( $this->getTableName() )
         ) );
 
         return ! empty( $table_exist );

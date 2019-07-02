@@ -5,7 +5,10 @@
     "autoload": {
         "psr-4": {
             "CustomTable\\": "src/CustomTable"
-        }
+        },
+        "files": [
+            "custom-table.php"
+        ]
     },
     "require": {
         "php": "^7.2"
