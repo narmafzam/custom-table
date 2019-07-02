@@ -2,6 +2,8 @@
 
 namespace CustomTable;
 
+use CustomTable\Database;
+
 class Table
 {
     public $name;
