@@ -403,14 +403,14 @@ class Table
         if( isset( $args['db'] ) ) {
             if( is_array( $args['db'] ) ) {
                 // Table as array of args to pass to DataBase
-                $this->database = new \CustomTable\DataBase( $this->getName(), $args['db'] );
-            } else if( $args['db'] instanceof \CustomTable\DataBase || is_subclass_of( $args['db'],  \CustomTable\Database::class ) ) {
+                $this->database = new DataBase( $this->getName(), $args['db'] );
+            } else if( $args['db'] instanceof DataBase || is_subclass_of( $args['db'],  Database::class ) ) {
                 // Table as custom object
                 $this->database = $args['db'];
             }
         } else {
             // Default database initialization
-            $this->database = new \CustomTable\DataBase( $this->getName(), $args );
+            $this->database = new DataBase( $this->getName(), $args );
         }
 
         // Views (list, add, edit)
