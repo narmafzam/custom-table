@@ -8,6 +8,7 @@ class Init
     {
         self::addAction();
         self::addHook();
+        Hook::init();
     }
 
     public static function addAction() {
