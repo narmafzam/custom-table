@@ -21,7 +21,7 @@ class Database
         $this->primaryKey   = ( isset( $args['primary_key'] ) ) ? $args['primary_key'] : '';
         $this->version      = ( isset( $args['version'] ) ) ? $args['version'] : 1;
         $this->global       = ( isset( $args['global'] ) && $args['global'] === true ) ? true : false;
-        $this->schema       = ( isset( $args['schema'] ) ) ? new DataBaseSchema( $args['schema'] ) : '';
+        $this->schema       = ( isset( $args['schema'] ) ) ? new DatabaseSchema( $args['schema'] ) : '';
 
         // If not primary key given, then look at out schema
         if( $this->getSchema() && ! $this->getPrimaryKey() ) {
@@ -120,7 +120,7 @@ class Database
         $this->tableName = $tableName;
     }
 
-    public function getSchema(): ? DataBaseSchema
+    public function getSchema(): ? DatabaseSchema
     {
         return $this->schema;
     }
@@ -141,7 +141,7 @@ class Database
     }
 
     protected function upgrade() {
-        $schemaUpdater = new DataBaseSchemaUpdater( $this );
+        $schemaUpdater = new DatabaseSchemaUpdater( $this );
         $schemaUpdater->run();
     }
 

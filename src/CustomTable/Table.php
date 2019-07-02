@@ -2,8 +2,6 @@
 
 namespace CustomTable;
 
-use CustomTable\Database;
-
 class Table
 {
     public $name;
@@ -404,15 +402,15 @@ class Table
 
         if( isset( $args['db'] ) ) {
             if( is_array( $args['db'] ) ) {
-                // Table as array of args to pass to DataBase
-                $this->database = new DataBase( $this->getName(), $args['db'] );
-            } else if( $args['db'] instanceof DataBase || is_subclass_of( $args['db'],  Database::class ) ) {
+                // Table as array of args to pass to Database
+                $this->database = new Database( $this->getName(), $args['db'] );
+            } else if( $args['db'] instanceof Database || is_subclass_of( $args['db'],  Database::class ) ) {
                 // Table as custom object
                 $this->database = $args['db'];
             }
         } else {
             // Default database initialization
-            $this->database = new DataBase( $this->getName(), $args );
+            $this->database = new Database( $this->getName(), $args );
         }
 
         // Views (list, add, edit)

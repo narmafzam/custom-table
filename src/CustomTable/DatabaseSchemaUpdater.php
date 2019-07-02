@@ -5,12 +5,12 @@ namespace CustomTable;
 class DatabaseSchemaUpdater
 {
     /**
-     * @var DataBase Database object
+     * @var Database Database object
      */
     public $database;
 
     /**
-     * @var DataBaseSchema Database Schema object
+     * @var DatabaseSchema Database Schema object
      */
     public $schema;
 
@@ -27,17 +27,17 @@ class DatabaseSchemaUpdater
     }
 
     /**
-     * @return DataBase
+     * @return Database
      */
-    public function getDatabase(): DataBase
+    public function getDatabase(): Database
     {
         return $this->database;
     }
 
     /**
-     * @return DataBaseSchema
+     * @return DatabaseSchema
      */
-    public function getSchema(): DataBaseSchema
+    public function getSchema(): DatabaseSchema
     {
         return $this->schema;
     }
