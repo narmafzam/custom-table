@@ -363,7 +363,7 @@ class Query
 
         // Convert to objects.
         if ( $this->getResults() ) {
-            $this->setResult(array_map( 'custom_table_get_object', $this->getResults() ));
+            $this->setResult(array_map( 'CustomTable\\Handler::getObject', $this->getResults() ));
         }
 
         if ( ! $q['suppress_filters'] ) {
@@ -379,7 +379,7 @@ class Query
         if ( $this->getResults() ) {
             $this->setResultCount(count( $this->getResults() ));
 
-            $this->results = array_map( 'custom_table_get_object', $this->getResults() );
+            $this->results = array_map( 'CustomTable\\Handler::getObject', $this->getResults() );
 
             //if ( $q['cache_results'] )
             //update_post_caches($this->posts, $post_type, $q['update_post_term_cache'], $q['update_post_meta_cache']);
