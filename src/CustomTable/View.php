@@ -31,7 +31,7 @@ class View
             'capability' => 'manage_options',
         ) );
 
-        $this->init();
+        $this->addHook();
     }
 
     public function getName()
@@ -44,7 +44,7 @@ class View
         return $this->args;
     }
 
-    public function init()
+    public function addHook()
     {
         $this->addAction();
         $this->addFilter();
@@ -62,6 +62,11 @@ class View
         add_filter( 'screen_settings', array( $this, 'maybeScreenSettings' ), 10, 2 );
         add_filter( 'admin_init', array( $this, 'maybeSetScreenSettings' ), 11 );
         add_filter( 'custom-table-set-screen-option', array( $this, 'setScreenSettings' ), 10, 3 );
+    }
+
+    public function init()
+    {
+        do_action( "custom_table_init_{$this->getName()}_view", $this );
     }
 
     public function showScreenOptions( $showScreen, $screen ) {
@@ -109,7 +114,7 @@ class View
         // Override
     }
 
-    function maybeSetScreenSettings() {
+    public function maybeSetScreenSettings() {
 
         if ( isset( $_POST['wp_screen_options'] ) && is_array( $_POST['wp_screen_options'] ) ) {
             check_admin_referer( 'screen-options-nonce', 'screenoptionnonce' );
@@ -203,7 +208,7 @@ class View
 
         // Setup the global Table object for this screen
         $databaseTable = $registeredTables[$this->getName()];
-        do_action( "custom_table_init_{$this->getName()}_view", $this );
+        $this->init();
     }
 
     public function render() {
