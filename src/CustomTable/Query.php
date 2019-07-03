@@ -51,6 +51,11 @@ class Query
         $this->result = $result;
     }
 
+    public function getResults()
+    {
+        return $this->results;
+    }
+
     public function getResultCount()
     {
         return $this->resultCount;
@@ -97,7 +102,7 @@ class Query
         $this->addQueryVar($queryVar, $value);
     }
 
-    public function getResults() {
+    public function getQueryResults() {
 
         /**
          * @var Table $databaseTable
@@ -109,7 +114,7 @@ class Query
         do_action_ref_array( 'custom_table_pre_get_results', array( &$this ) );
 
         // Shorthand.
-        $q = &$this->getQueryVars();
+        $q = &$this->queryVars;
 
         // Fill again in case pre_get_posts unset some vars.
         $q = $this->fillQueryVars($q);
@@ -592,6 +597,6 @@ class Query
     public function query( $query ) {
         $this->init();
         $this->query = $this->queryVars = wp_parse_args( $query );
-        return $this->getResults();
+        return $this->getQueryResults();
     }
 }

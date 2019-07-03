@@ -216,7 +216,7 @@ class ListTable extends WP_List_Table
         $query->queryVars['items_per_page'] = $per_page;
 
         // Get query results
-        $this->items = $query->getResults();
+        $this->items = $query->getQueryResults();
 
         $total_items = $query->getFoundResults();
 
