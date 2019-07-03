@@ -473,10 +473,10 @@ class Table
                             $views[$view] = new ListView( $this->getName(), $view_args );
                             break;
                         case 'add':
-                            $views[$view] = new ListView( $this->getName(), $view_args );
+                            $views[$view] = new EditView( $this->getName(), $view_args );
                             break;
                         case 'edit':
-                            $views[$view] = new ListView( $this->getName(), $view_args );
+                            $views[$view] = new EditView( $this->getName(), $view_args );
                             break;
                         default:
                             $views[$view] = new View( $this->getName(), $view_args );
