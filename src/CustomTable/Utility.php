@@ -73,4 +73,10 @@ class Utility
 
         return null;
     }
+
+    public static function generateCamelCase($str){
+
+        $str = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
+        return $str;
+    }
 }

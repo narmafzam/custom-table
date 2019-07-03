@@ -30,7 +30,7 @@ class Table
 
     public $publiclyQueryable = null;
 
-    public $showUI = null;
+    public $showUi = null;
 
     public $showInMenu = null;
 
@@ -139,9 +139,9 @@ class Table
         return $this->publiclyQueryable;
     }
 
-    public function getShowUI()
+    public function getShowUi()
     {
-        return $this->showUI;
+        return $this->showUi;
     }
 
     public function getShowInMenu()
@@ -381,6 +381,7 @@ class Table
         }
 
         foreach ( $args as $property_name => $property_value ) {
+            $property_name = Utility::generateCamelCase($property_name);
             $this->$property_name = $property_value;
         }
 
@@ -420,7 +421,7 @@ class Table
                 'page_title'    => $this->getLabels()->plural_name,
                 'menu_title'    => $this->getLabels()->all_items,
                 'menu_slug'     => $this->getName(),
-                'show_in_menu'  => $this->getShowUI(),
+                'show_in_menu'  => $this->getShowUi(),
 
                 // Specific view args
                 'per_page'      => 20,
@@ -431,7 +432,7 @@ class Table
                 'menu_title'    => $this->getLabels()->add_new,
                 'menu_slug'     => 'add_' . $this->getName(),
                 'parent_slug'   => $this->getName(),
-                'show_in_menu'  => $this->getShowUI(),
+                'show_in_menu'  => $this->getShowUi(),
 
                 // Specific view args
                 'columns'       => 2,

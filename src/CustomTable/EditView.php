@@ -306,7 +306,7 @@ class EditView extends View
             wp_die(__('Invalid item type.'));
 
         // If not CT object allow ui, die
-        if (!$databaseTable->getShowUI()) {
+        if (!$databaseTable->getShowUi()) {
             wp_die(__('Sorry, you are not allowed to edit items of this type.'));
         }
 
