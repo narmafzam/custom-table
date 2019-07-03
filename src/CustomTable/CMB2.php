@@ -127,7 +127,7 @@ class CMB2
          */
         global $registeredTables, $databaseTable, $cmb2Override;
 
-        if( ! is_a( $databaseTable, Table::class ) ) {
+        if( ! $databaseTable instanceof Table ) {
             return $value;
         }
 

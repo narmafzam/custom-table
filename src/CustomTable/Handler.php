@@ -300,7 +300,7 @@ class Handler
          */
         global $wpdb, $databaseTable;
 
-        if( ! is_a( $databaseTable, 'custom_table_Table' ) ) {
+        if( ! $databaseTable instanceof Table ) {
             return new WP_Error( 'invalid_custom_table_table', __( 'Invalid CustomTable Table object.' ) );
         }
 
@@ -443,7 +443,7 @@ class Handler
          */
         global $wpdb, $databaseTable;
 
-        if( ! is_a( $databaseTable, Table::class ) ) {
+        if( ! $databaseTable instanceof Table ) {
             return new WP_Error( 'invalid_custom_table_table', __( 'Invalid CustomTable Table object.' ) );
         }
 

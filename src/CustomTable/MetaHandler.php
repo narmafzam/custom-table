@@ -193,7 +193,7 @@ class MetaHandler
          */
         global $wpdb, $databaseTable;
 
-        if( ! is_a( $databaseTable, Table::class ) ) {
+        if( ! $databaseTable instanceof Table ) {
             return false;
         }
 
