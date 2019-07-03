@@ -332,7 +332,7 @@ class Handler
             }
         }
 
-        $objectData = apply_filters( 'custom_table_insert_object_data', $databaseTable, $originalObjectData );
+        $objectData = apply_filters( 'custom_table_insert_object_data', $objectData, $originalObjectData );
 
         $objectData = wp_unslash( $objectData );
 
