@@ -120,7 +120,7 @@ class ListView extends View
         if ( ! $columns )
             return;
 
-        $legend = ! empty( $columns['_title'] ) ? $columns['_title'] : __( 'Columns' );
+        $legend = isset($columns['_title']) && ! empty( $columns['_title'] ) ? $columns['_title'] : __( 'Columns' );
         ?>
         <fieldset class="metabox-prefs">
             <legend><?php echo $legend; ?></legend>
@@ -232,7 +232,7 @@ class ListView extends View
         $objectIds = array();
 
         // Check received items
-        if ( ! empty( $_REQUEST['item'] ) ) {
+        if ( isset($_REQUEST['item']) && ! empty( $_REQUEST['item'] ) ) {
             $objectIds = array_map('intval', $_REQUEST['item']);
         }
 

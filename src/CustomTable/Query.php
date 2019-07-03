@@ -211,7 +211,7 @@ class Query
 
                 if ( empty( $orderby ) ) {
                     $orderby = "{$databaseTable->getDatabase()->getTableName()}.{$databaseTable->getDatabase()->getPrimaryKey()} " . $q['order'];
-                } elseif ( ! empty( $q['order'] ) ) {
+                } elseif ( isset($q['order']) && ! empty( $q['order'] ) ) {
                     $orderby .= " {$q['order']}";
                 }
             }
@@ -405,7 +405,7 @@ class Query
         $qv['paged'] = absint($qv['paged']);
 
         // Fairly insane upper bound for search string lengths.
-        if ( ! is_scalar( $qv['s'] ) || ( ! empty( $qv['s'] ) && strlen( $qv['s'] ) > 1600 ) ) {
+        if ( isset($qv['s']) && ! is_scalar( $qv['s'] ) || ( isset($qv['s']) && ! empty( $qv['s'] ) && strlen( $qv['s'] ) > 1600 ) ) {
             $qv['s'] = '';
         }
 
@@ -451,7 +451,7 @@ class Query
         // there are no line breaks in <input /> fields
         $q['s'] = str_replace( array( "\r", "\n" ), '', $q['s'] );
         $q['search_terms_count'] = 1;
-        if ( ! empty( $q['sentence'] ) ) {
+        if ( isset($q['sentence']) && ! empty( $q['sentence'] ) ) {
             $q['search_terms'] = array( $q['s'] );
         } else {
             if ( preg_match_all( '/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $q['s'], $matches ) ) {
@@ -465,7 +465,7 @@ class Query
             }
         }
 
-        $n = ! empty( $q['exact'] ) ? '' : '%';
+        $n = isset($q['exact']) && ! empty( $q['exact'] ) ? '' : '%';
         $searchand = '';
         $q['search_orderby_title'] = array();
 

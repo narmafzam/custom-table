@@ -314,7 +314,7 @@ class Handler
         $update = false;
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
 
-        if ( ! empty( $objectData[$primaryKey] ) ) {
+        if ( isset( $objectData[$primaryKey] ) ) {
             $update = true;
 
             // Get the object ID.
@@ -376,7 +376,7 @@ class Handler
         }
 
         // If isset meta_input and object supports meta, then add meta data
-        if ( ! empty( $objectData['meta_input'] ) && $databaseTable->getMeta() ) {
+        if ( isset( $objectData['meta_input'] ) && ! empty( $objectData['meta_input'] ) && $databaseTable->getMeta() ) {
             foreach ( $objectData['meta_input'] as $field => $value ) {
                 MetaHandler::updateObjectMeta( $objectId, $field, $value );
             }

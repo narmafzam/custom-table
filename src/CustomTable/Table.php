@@ -254,7 +254,7 @@ class Table
 
         $args = apply_filters( 'custom_table_register_table_args', $args, $this->getName() );
 
-        $has_edit_link = ! empty( $args['_edit_link'] );
+        $has_edit_link = isset( $args['_edit_link'] ) && !empty( $args['_edit_link'] );
 
         // Args prefixed with an underscore are reserved for internal use.
         $defaults = array(

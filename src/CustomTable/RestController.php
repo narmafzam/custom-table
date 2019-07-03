@@ -120,12 +120,12 @@ class RestController extends WP_REST_Controller
     public function get_items( $request ) {
 
         // Ensure a search string is set in case the orderby is set to 'relevance'.
-        if ( ! empty( $request['orderby'] ) && 'relevance' === $request['orderby'] && empty( $request['search'] ) ) {
+        if ( isset($request['orderby']) && ! empty( $request['orderby'] ) && 'relevance' === $request['orderby'] && empty( $request['search'] ) ) {
             return new WP_Error( 'rest_no_search_term_defined', __( 'You need to define a search term to order by relevance.' ), array( 'status' => 400 ) );
         }
 
         // Ensure an include parameter is set in case the orderby is set to 'include'.
-        if ( ! empty( $request['orderby'] ) && 'include' === $request['orderby'] && empty( $request['include'] ) ) {
+        if ( isset($request['orderby']) && ! empty( $request['orderby'] ) && 'include' === $request['orderby'] && empty( $request['include'] ) ) {
             return new WP_Error( 'rest_orderby_include_missing_include', __( 'You need to define an include parameter to order by include.' ), array( 'status' => 400 ) );
         }
 
@@ -273,7 +273,7 @@ class RestController extends WP_REST_Controller
     }
 
     public function create_item_permissions_check( $request ) {
-        if ( ! empty( $request['id'] ) ) {
+        if ( isset($request['id']) && ! empty( $request['id'] ) ) {
             return new WP_Error( 'rest_item_exists', __( 'Cannot create existing item.' ), array( 'status' => 400 ) );
         }
 
@@ -285,7 +285,7 @@ class RestController extends WP_REST_Controller
     }
 
     public function create_item( $request ) {
-        if ( ! empty( $request['id'] ) ) {
+        if ( isset($request['id']) && ! empty( $request['id'] ) ) {
             return new WP_Error( 'rest_item_exists', __( 'Cannot create existing item.' ), array( 'status' => 400 ) );
         }
 
@@ -316,7 +316,7 @@ class RestController extends WP_REST_Controller
 
         $schema = $this->get_item_schema();
 
-        if ( in_array( 'meta', $this->getTable()->getSupports() ) && ! empty( $schema['properties']['meta'] ) && isset( $request['meta'] ) ) {
+        if ( in_array( 'meta', $this->getTable()->getSupports() ) && isset($schema['properties']) && isset($schema['properties']['meta']) && ! empty( $schema['properties']['meta'] ) && isset( $request['meta'] ) ) {
 
             $meta_update = $this->getMeta()->update_value( $request['meta'], $objectId );
 
@@ -392,7 +392,7 @@ class RestController extends WP_REST_Controller
 
         $schema = $this->get_item_schema();
 
-        if ( in_array( 'meta', $this->getTable()->getSupports() ) && ! empty( $schema['properties']['meta'] ) && isset( $request['meta'] ) ) {
+        if ( in_array( 'meta', $this->getTable()->getSupports() ) && isset($schema['properties']) && isset($schema['properties']['meta']) && ! empty( $schema['properties']['meta'] ) && isset( $request['meta'] ) ) {
 
             $meta_update = $this->getMeta()->update_value( $request['meta'], $objectId );
 
@@ -617,7 +617,7 @@ class RestController extends WP_REST_Controller
             $data['meta'] = $this->getMeta()->get_value( $object->$primaryKey, $request );
         }
 
-        $context = ! empty( $request['context'] ) ? $request['context'] : 'view';
+        $context = isset($request['context']) && ! empty( $request['context'] ) ? $request['context'] : 'view';
         $data    = $this->add_additional_fields_to_object( $data, $request );
         $data    = $this->filter_response_by_context( $data, $context );
 
