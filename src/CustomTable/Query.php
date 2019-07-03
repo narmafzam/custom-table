@@ -341,7 +341,7 @@ class Query
             if ( $split_the_query ) {
                 // First get the IDs and then fill in the objects
 
-                $this->request = "SELECT $found_rows $distinct {$databaseTable->getDatabase()->getTableName()}.{$databaseTable->getDatabase()->getPrimaryKey()}} FROM {$databaseTable->getDatabase()->getTableName()} $join WHERE 1=1 $where $groupby $orderby $limits";
+                $this->request = "SELECT $found_rows $distinct {$databaseTable->getDatabase()->getTableName()}.{$databaseTable->getDatabase()->getPrimaryKey()} FROM {$databaseTable->getDatabase()->getTableName()} $join WHERE 1=1 $where $groupby $orderby $limits";
 
                 $this->request = apply_filters( 'custom_table_query_request_ids', $this->request, $this );
 
