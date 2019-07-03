@@ -53,7 +53,7 @@ class DatabaseSchemaUpdater
             $current_schema_fields = array();
 
             // Get a description of current schema
-            $schema_description = $this->getDatabase()->getDatabase()->getResults( "DESCRIBE {$this->getDatabase()->getTableName()}" );
+            $schema_description = $this->getDatabase()->getDatabase()->get_results( "DESCRIBE {$this->getDatabase()->getTableName()}" );
 
             // Check stored schema with configured fields to check field deletions and build a custom array to be used after
             foreach( $schema_description as $field ) {
