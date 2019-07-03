@@ -314,7 +314,7 @@ class Handler
         $update = false;
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
 
-        if ( isset( $objectData[$primaryKey] ) ) {
+        if ( isset( $objectData[$primaryKey] ) && !empty($objectData[$primaryKey]) ) {
             $update = true;
 
             // Get the object ID.
