@@ -494,8 +494,8 @@ class Table
             // Default views initialization
             $this->views = (object) array(
                 'list' => new ListView( $this->getName(), $views_defaults['list'] ),
-                'add' => new ListView( $this->getName(), $views_defaults['add'] ),
-                'edit' => new ListView( $this->getName(), $views_defaults['edit'] ),
+                'add' => new EditView( $this->getName(), $views_defaults['add'] ),
+                'edit' => new EditView( $this->getName(), $views_defaults['edit'] ),
             );
         }
 
