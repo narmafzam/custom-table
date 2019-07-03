@@ -61,7 +61,7 @@ class DatabaseSchema
                         'key'               => false,
                     ) );
 
-                    $this->getFields()[$field_id] = $field_args;
+                    $this->addField($field_id, $field_args);
                 }
             }
 
