@@ -30,7 +30,7 @@ class TableMeta
     public function __construct( $table ) {
 
         $this->table = $table;
-        $this->name  = $this->table->name . '_meta';
+        $this->name  = $this->getTable()->getName() . '_meta';
 
         $this->database = new Database( $this->getName(), array(
             'version' => 1,

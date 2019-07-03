@@ -25,7 +25,7 @@ class MetaHandler
 
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
         $metaPrimaryKey = $databaseTable->getMeta()->getDatabase()->getPrimaryKey();
-        $metaTableName = $databaseTable->getMeta()->db->table_name;
+        $metaTableName = $databaseTable->getMeta()->getDatabase()->getTableName();
 
         // expected_slashed ($metaKey)
         $metaKey = wp_unslash($metaKey);
@@ -37,7 +37,7 @@ class MetaHandler
             return $check;
 
         if ( $unique && $wpdb->get_var( $wpdb->prepare(
-                "SELECT COUNT(*) FROM $metaTableName WHERE meta_key = %s AND $primaryKey = %d",
+                "SELECT COUNT(*) FROM {$metaTableName} WHERE meta_key = %s AND {$primaryKey} = %d",
                 $metaKey, $objectId ) ) )
             return false;
 
@@ -57,7 +57,7 @@ class MetaHandler
 
         $mid = (int) $wpdb->insert_id;
 
-        wp_cache_delete( $objectId, $databaseTable->getMeta()->name );
+        wp_cache_delete( $objectId, $databaseTable->getMeta()->getName() );
 
         do_action( "added_{$databaseTable->getName()}_meta", $mid, $objectId, $metaKey, $_metaValue );
 
@@ -89,14 +89,14 @@ class MetaHandler
         $metaValue = wp_unslash($metaValue);
         $delete_all = false;
 
-        $check = apply_filters( "delete_{$databaseTable->name}_metadata", null, $objectId, $metaKey, $metaValue, $delete_all );
+        $check = apply_filters( "delete_{$databaseTable->getName()}_metadata", null, $objectId, $metaKey, $metaValue, $delete_all );
         if ( null !== $check )
             return (bool) $check;
 
         $_metaValue = $metaValue;
         $metaValue = maybe_serialize( $metaValue );
 
-        $query = $wpdb->prepare( "SELECT $metaPrimaryKey FROM $metaTableName WHERE meta_key = %s", $metaKey );
+        $query = $wpdb->prepare( "SELECT {$metaPrimaryKey} FROM {$metaTableName} WHERE meta_key = %s", $metaKey );
 
         if ( !$delete_all )
             $query .= $wpdb->prepare(" AND $primaryKey = %d", $objectId );
@@ -114,12 +114,12 @@ class MetaHandler
                 $value_clause = $wpdb->prepare( " AND meta_value = %s", $metaValue );
             }
 
-            $objectIds = $wpdb->get_col( $wpdb->prepare( "SELECT $metaPrimaryKey FROM $metaTableName WHERE meta_key = %s $value_clause", $metaKey ) );
+            $objectIds = $wpdb->get_col( $wpdb->prepare( "SELECT {$metaPrimaryKey} FROM {$metaTableName} WHERE meta_key = %s {$value_clause}", $metaKey ) );
         }
 
-        do_action( "delete_{$databaseTable->name}_meta", $meta_ids, $objectId, $metaKey, $_metaValue );
+        do_action( "delete_{$databaseTable->getName()}_meta", $meta_ids, $objectId, $metaKey, $_metaValue );
 
-        $query = "DELETE FROM $metaTableName WHERE $metaPrimaryKey IN( " . implode( ',', $meta_ids ) . " )";
+        $query = "DELETE FROM $metaTableName WHERE {$metaPrimaryKey} IN( " . implode( ',', $meta_ids ) . " )";
 
         $count = $wpdb->query($query);
 
@@ -128,13 +128,13 @@ class MetaHandler
 
         if ( $delete_all && isset($objectIds) ) {
             foreach ( (array) $objectIds as $o_id ) {
-                wp_cache_delete( $o_id, $databaseTable->getMeta()->name );
+                wp_cache_delete( $o_id, $databaseTable->getMeta()->getName() );
             }
         } else {
-            wp_cache_delete( $objectId, $databaseTable->getMeta()->name );
+            wp_cache_delete( $objectId, $databaseTable->getMeta()->getName() );
         }
 
-        do_action( "deleted_{$databaseTable->name}_meta", $meta_ids, $objectId, $metaKey, $_metaValue );
+        do_action( "deleted_{$databaseTable->getName()}_meta", $meta_ids, $objectId, $metaKey, $_metaValue );
 
         return true;
     }
@@ -155,7 +155,7 @@ class MetaHandler
             return false;
         }
 
-        $check = apply_filters( "get_{$databaseTable->name}_metadata", null, $objectId, $metaKey, $single );
+        $check = apply_filters( "get_{$databaseTable->getName()}_metadata", null, $objectId, $metaKey, $single );
         if ( null !== $check ) {
             if ( $single && is_array( $check ) )
                 return $check[0];
@@ -163,10 +163,10 @@ class MetaHandler
                 return $check;
         }
 
-        $meta_cache = wp_cache_get( $objectId, $databaseTable->getMeta()->name );
+        $meta_cache = wp_cache_get( $objectId, $databaseTable->getMeta()->getName() );
 
         if ( !$meta_cache ) {
-            $meta_cache = self::updateMetaCache( $databaseTable->getMeta()->name, array( $objectId ) );
+            $meta_cache = self::updateMetaCache( $databaseTable->getMeta()->getName(), array( $objectId ) );
             $meta_cache = $meta_cache[$objectId];
         }
 
@@ -209,7 +209,7 @@ class MetaHandler
 
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
         $metaPrimaryKey = $databaseTable->getMeta()->getDatabase()->getPrimaryKey();
-        $metaTableName = $databaseTable->getMeta()->db->table_name;
+        $metaTableName = $databaseTable->getMeta()->getDatabase()->getTableName();
 
         // Keep original values
         $raw_meta_key = $metaKey;
@@ -218,9 +218,9 @@ class MetaHandler
         // Sanitize vars
         $metaKey = wp_unslash( $metaKey );
         $metaValue = wp_unslash( $metaValue );
-        $metaValue = sanitize_meta( $metaKey, $metaValue, $databaseTable->name );
+        $metaValue = sanitize_meta( $metaKey, $metaValue, $databaseTable->getName() );
 
-        $check = apply_filters( "update_{$databaseTable->name}_metadata", null, $objectId, $metaKey, $metaValue, $prev_value );
+        $check = apply_filters( "update_{$databaseTable->getName()}_metadata", null, $objectId, $metaKey, $metaValue, $prev_value );
         if ( null !== $check )
             return (bool) $check;
 
@@ -233,7 +233,7 @@ class MetaHandler
             }
         }
 
-        $meta_ids = $wpdb->get_col( $wpdb->prepare( "SELECT {$metaPrimaryKey} FROM $metaTableName WHERE meta_key = %s AND $primaryKey = %d", $metaKey, $objectId ) );
+        $meta_ids = $wpdb->get_col( $wpdb->prepare( "SELECT {$metaPrimaryKey} FROM {$metaTableName} WHERE meta_key = %s AND {$primaryKey} = %d", $metaKey, $objectId ) );
         if ( empty( $meta_ids ) ) {
             return self::addObjectMeta( $objectId, $raw_meta_key, $passed_value );
         }
@@ -254,19 +254,19 @@ class MetaHandler
 
         foreach ( $meta_ids as $meta_id ) {
 
-            do_action( "update_{$databaseTable->name}_meta", $meta_id, $objectId, $metaKey, $_metaValue );
+            do_action( "update_{$databaseTable->getName()}_meta", $meta_id, $objectId, $metaKey, $_metaValue );
         }
 
-        $result = $databaseTable->getMeta()->db->update( $data, $where );
+        $result = $databaseTable->getMeta()->getDatabase()->update( $data, $where );
 
         if ( ! $result )
             return false;
 
-        wp_cache_delete( $objectId, $databaseTable->getMeta()->name );
+        wp_cache_delete( $objectId, $databaseTable->getMeta()->getName() );
 
         foreach ( $meta_ids as $meta_id ) {
 
-            do_action( "updated_{$databaseTable->name}_meta", $meta_id, $objectId, $metaKey, $_metaValue );
+            do_action( "updated_{$databaseTable->getName()}_meta", $meta_id, $objectId, $metaKey, $_metaValue );
         }
 
         return true;
@@ -290,7 +290,7 @@ class MetaHandler
         // Setup vars
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
         $metaPrimaryKey = $databaseTable->getMeta()->getDatabase()->getPrimaryKey();
-        $metaTableName = $databaseTable->getMeta()->db->table_name;
+        $metaTableName = $databaseTable->getMeta()->getDatabase()->getTableName();
 
         if ( !is_array($objectIds) ) {
             $objectIds = preg_replace('|[^0-9,]|', '', $objectIds);
@@ -369,7 +369,7 @@ class MetaHandler
         $metaPrimaryKey = $databaseTable->getMeta()->getDatabase()->getPrimaryKey();
         $metaTableName = $databaseTable->getMeta()->getDatabase()->getTableName();
 
-        $meta = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $metaTableName WHERE $metaPrimaryKey = %d", $meta_id ) );
+        $meta = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$metaTableName} WHERE {$metaPrimaryKey} = %d", $meta_id ) );
 
         if ( empty( $meta ) )
             return false;
@@ -405,7 +405,7 @@ class MetaHandler
 
         // Setup vars
         $metaPrimaryKey = $databaseTable->getMeta()->getDatabase()->getPrimaryKey();
-        $metaTableName = $databaseTable->getMeta()->db->table_name;
+        $metaTableName = $databaseTable->getMeta()->getDatabase()->getTableName();
 
         // Fetch the meta and go on if it's found.
         if ( $meta = self::getMetadataByMid( $metaType, $meta_id ) ) {
@@ -437,7 +437,7 @@ class MetaHandler
 
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
         $metaPrimaryKey = $databaseTable->getMeta()->getDatabase()->getPrimaryKey();
-        $metaTableName = $databaseTable->getMeta()->db->table_name;
+        $metaTableName = $databaseTable->getMeta()->getDatabase()->getTableName();
 
         return $wpdb->get_results( $wpdb->prepare(
             "SELECT meta_key, meta_value, meta_id, {$primaryKey}
@@ -448,17 +448,20 @@ class MetaHandler
 
     public static function metaForm( $object = null ) {
 
+        /**
+         * @var Table $databaseTable
+         */
         global $wpdb, $databaseTable;
 
         $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
         $object = Handler::getObject( $object );
 
-        $keys = apply_filters( "{$databaseTable->name}_meta_form_keys", null, $object );
+        $keys = apply_filters( "{$databaseTable->getName()}_meta_form_keys", null, $object );
 
         if ( null === $keys ) {
-            $limit = apply_filters( "{$databaseTable->name}_meta_form_limit", 30 );
+            $limit = apply_filters( "{$databaseTable->getName()}_meta_form_limit", 30 );
             $sql = "SELECT DISTINCT meta_key
-			FROM {$databaseTable->getMeta()->db->table_name}
+			FROM {$databaseTable->getMeta()->getDatabase()->getTableName()}
 			WHERE meta_key NOT BETWEEN '_' AND '_z'
 			HAVING meta_key NOT LIKE %s
 			ORDER BY meta_key

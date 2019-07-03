@@ -210,7 +210,7 @@ class ListTable extends WP_List_Table
         global $databaseTable, $query;
 
         // Get per page setting
-        $per_page = $this->get_items_per_page( 'edit_' . $databaseTable->name . '_per_page' );
+        $per_page = $this->get_items_per_page( 'edit_' . $databaseTable->getName() . '_per_page' );
 
         // Update query vars based on settings
         $query->queryVars['items_per_page'] = $per_page;

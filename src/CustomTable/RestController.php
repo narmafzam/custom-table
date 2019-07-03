@@ -495,7 +495,7 @@ class RestController extends WP_REST_Controller
         if ( isset( $query_args['orderby'] ) && isset( $request['orderby'] ) ) {
             $orderby_mappings = array();
 
-            $orderby_mappings = apply_filters( "custom_table_rest_{$this->name}_orderby_mappings", $orderby_mappings, $databaseTable, $prepared_args, $request );
+            $orderby_mappings = apply_filters( "custom_table_rest_{$this->getName()}_orderby_mappings", $orderby_mappings, $databaseTable, $prepared_args, $request );
 
             if ( isset( $orderby_mappings[ $request['orderby'] ] ) ) {
                 $query_args['orderby'] = $orderby_mappings[ $request['orderby'] ];
@@ -564,7 +564,7 @@ class RestController extends WP_REST_Controller
             }
         }
 
-        return apply_filters( "custom_table_rest_pre_insert_{$this->name}", $prepared_object, $request );
+        return apply_filters( "custom_table_rest_pre_insert_{$this->getName()}", $prepared_object, $request );
 
     }
 

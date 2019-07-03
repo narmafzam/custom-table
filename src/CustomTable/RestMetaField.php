@@ -42,7 +42,7 @@ class RestMetaField extends WP_REST_Meta_Fields
     }
 
     protected function get_meta_type() {
-        return $this->getTable()->getMeta()->name;
+        return $this->getTable()->getMeta()->getName();
     }
 
     protected function get_meta_subtype() {

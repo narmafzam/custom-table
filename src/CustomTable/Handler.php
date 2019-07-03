@@ -416,10 +416,10 @@ class Handler
             $objectData = wp_slash( $objectData );
         }
 
-        $primary_key = $databaseTable->db->primary_key;
+        $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
 
         // First, get all of the original fields.
-        $object = self::getObject( $objectData[$primary_key], ARRAY_A );
+        $object = self::getObject( $objectData[$primaryKey], ARRAY_A );
 
         if ( is_null( $object ) ) {
             if ( $wp_error )
@@ -471,7 +471,7 @@ class Handler
             MetaHandler::deleteObjectMeta( $objectId, '_wp_trash_meta_status' );
             MetaHandler::deleteObjectMeta( $objectId, '_wp_trash_meta_time' );
 
-            $objectMetaIds = $wpdb->get_col( $wpdb->prepare( "SELECT {$databaseTable->getMeta()->getDatabase()->getPrimaryKey()} FROM {$databaseTable->getMeta()->getDatabase()->getPrimaryKey()} WHERE {$databaseTable->db->primary_key} = %d ", $objectId ));
+            $objectMetaIds = $wpdb->get_col( $wpdb->prepare( "SELECT {$databaseTable->getMeta()->getDatabase()->getPrimaryKey()} FROM {$databaseTable->getMeta()->getDatabase()->getPrimaryKey()} WHERE {$databaseTable->getDatabase()->getPrimaryKey()} = %d ", $objectId ));
 
             foreach ( $objectMetaIds as $mid ) {
                 MetaHandler::deleteMetadataByMid( 'post', $mid );

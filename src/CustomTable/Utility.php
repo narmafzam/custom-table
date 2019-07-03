@@ -38,10 +38,10 @@ class Utility
             return '';
         }
 
-        $primary_key = $registeredTables[$name]->db->primary_key;
+        $primaryKey = $registeredTables[$name]->getDatabase()->getPrimaryKey();
 
         // Edit link + object ID
-        return add_query_arg( array( $primary_key => $objectId ), $registeredTables[$name]->views->edit->get_link() );
+        return add_query_arg( array( $primaryKey => $objectId ), $registeredTables[$name]->getViews()->edit->get_link() );
     }
 
     public static function getDeleteLink( $name, $objectId = 0 ) {
@@ -58,17 +58,19 @@ class Utility
         }
 
         // Check if user has delete permissions
-        if( ! current_user_can( $registeredTables[$name]->cap->delete_item, $objectId ) ) {
+        if( ! current_user_can( $registeredTables[$name]->getCap()->delete_item, $objectId ) ) {
             return '';
         }
+        $databaseTable = $registeredTables[$name];
+        if ($databaseTable instanceof Table) {
+            $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
+            // List link + object ID + action delete
+            $url = $databaseTable->getViews()->list->get_link();
+            $url = add_query_arg( array( $primaryKey => $objectId ), $url );
+            $url = add_query_arg( array( 'custom-table-action' => 'delete' ), $url );
+            return $url;
+        }
 
-        $primary_key = $registeredTables[$name]->db->primary_key;
-
-        // List link + object ID + action delete
-        $url = $registeredTables[$name]->views->list->get_link();
-        $url = add_query_arg( array( $primary_key => $objectId ), $url );
-        $url = add_query_arg( array( 'custom-table-action' => 'delete' ), $url );
-
-        return $url;
+        return null;
     }
 }

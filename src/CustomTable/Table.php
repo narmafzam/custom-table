@@ -252,7 +252,7 @@ class Table
     public function setProps( $args ) {
         $args = wp_parse_args( $args );
 
-        $args = apply_filters( 'custom_table_register_table_args', $args, $this->name );
+        $args = apply_filters( 'custom_table_register_table_args', $args, $this->getName() );
 
         $has_edit_link = ! empty( $args['_edit_link'] );
 
@@ -349,7 +349,7 @@ class Table
 
         if ( false !== $args['query_var'] ) {
             if ( true === $args['query_var'] ) {
-                $args['query_var'] = $this->name;
+                $args['query_var'] = $this->getName();
             } else {
                 $args['query_var'] = sanitize_title_with_dashes( $args['query_var'] );
             }
@@ -360,7 +360,7 @@ class Table
                 $args['rewrite'] = array();
             }
             if ( empty( $args['rewrite']['slug'] ) ) {
-                $args['rewrite']['slug'] = $this->name;
+                $args['rewrite']['slug'] = $this->getName();
             }
             if ( ! isset( $args['rewrite']['with_front'] ) ) {
                 $args['rewrite']['with_front'] = true;
@@ -396,7 +396,7 @@ class Table
 
         $this->labels = (object) $labels;
 
-        $this->label  = $this->labels->name;
+        $this->label  = $this->getLabels()->name;
 
         // Table database
 
