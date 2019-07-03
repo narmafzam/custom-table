@@ -2,6 +2,13 @@
     "name": "narmafzam/custom-table",
     "license": "proprietary",
     "type": "project",
+    "authors": [
+        {
+            "name": "Farshad Asgharzade",
+            "email": "farshadasgharzade@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "CustomTable\\": "src/CustomTable"
