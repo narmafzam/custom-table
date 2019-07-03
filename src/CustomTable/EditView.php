@@ -389,7 +389,7 @@ class EditView extends View
 
         if ($this->isEditing()) {
             $title = $databaseTable->getLabels()->edit_item;
-            $new_url = ($databaseTable->getViews()->add ? $databaseTable->getViews()->add->get_link() : false);
+            $new_url = ($databaseTable->getViews()->add ? $databaseTable->getViews()->add->getLink() : false);
         } else {
             $title = $databaseTable->getLabels()->add_new_item;
         }

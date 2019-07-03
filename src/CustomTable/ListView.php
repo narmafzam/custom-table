@@ -332,7 +332,7 @@ class ListView extends View
             <h1 class="wp-heading-inline"><?php echo $databaseTable->getLabels()->plural_name; ?></h1>
 
             <?php if ( property_exists( $databaseTable->getViews(), 'add' ) && $databaseTable->getViews()->add && current_user_can( $databaseTable->getCap()->create_items ) ) :
-                echo ' <a href="' . esc_url( $databaseTable->getViews()->add->get_link() ) . '" class="page-title-action">' . esc_html( $databaseTable->getLabels()->add_new_item ) . '</a>';
+                echo ' <a href="' . esc_url( $databaseTable->getViews()->add->getLink() ) . '" class="page-title-action">' . esc_html( $databaseTable->getLabels()->add_new_item ) . '</a>';
             endif; ?>
 
             <hr class="wp-header-end">

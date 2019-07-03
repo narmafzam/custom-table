@@ -17,7 +17,7 @@ class Utility
             return '';
         }
 
-        return $registeredTables[$name]->views->list->get_link();
+        return $registeredTables[$name]->views->list->getLink();
     }
 
     public static function getEditLink( $name, $objectId = 0 ) {
@@ -41,7 +41,7 @@ class Utility
         $primaryKey = $registeredTables[$name]->getDatabase()->getPrimaryKey();
 
         // Edit link + object ID
-        return add_query_arg( array( $primaryKey => $objectId ), $registeredTables[$name]->getViews()->edit->get_link() );
+        return add_query_arg( array( $primaryKey => $objectId ), $registeredTables[$name]->getViews()->edit->getLink() );
     }
 
     public static function getDeleteLink( $name, $objectId = 0 ) {
@@ -65,7 +65,7 @@ class Utility
         if ($databaseTable instanceof Table) {
             $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
             // List link + object ID + action delete
-            $url = $databaseTable->getViews()->list->get_link();
+            $url = $databaseTable->getViews()->list->getLink();
             $url = add_query_arg( array( $primaryKey => $objectId ), $url );
             $url = add_query_arg( array( 'custom-table-action' => 'delete' ), $url );
             return $url;
