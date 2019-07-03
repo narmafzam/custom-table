@@ -33,15 +33,23 @@ class Utility
             return '';
         }
 
-        // Check if user has edit permissions
-        if( ! current_user_can( $registeredTables[$name]->cap->edit_item, $objectId ) ) {
-            return '';
+        $table = $registeredTables[$name];
+
+        if ($table instanceof Table) {
+            // Check if user has edit permissions
+            if( ! current_user_can( $table->getCap()->edit_item, $objectId ) ) {
+                return '';
+            }
+
+            $primaryKey = $table->getDatabase()->getPrimaryKey();
+
+            if (isset($table->getViews()->edit) && !empty($table->getViews()->edit)) {
+
+                // Edit link + object ID
+                return add_query_arg( array( $primaryKey => $objectId ), $table->getViews()->edit->getLink() );
+            }
         }
-
-        $primaryKey = $registeredTables[$name]->getDatabase()->getPrimaryKey();
-
-        // Edit link + object ID
-        return add_query_arg( array( $primaryKey => $objectId ), $registeredTables[$name]->getViews()->edit->getLink() );
+        return null;
     }
 
     public static function getDeleteLink( $name, $objectId = 0 ) {
@@ -57,18 +65,20 @@ class Utility
             return '';
         }
 
-        // Check if user has delete permissions
-        if( ! current_user_can( $registeredTables[$name]->getCap()->delete_item, $objectId ) ) {
-            return '';
-        }
-        $databaseTable = $registeredTables[$name];
-        if ($databaseTable instanceof Table) {
-            $primaryKey = $databaseTable->getDatabase()->getPrimaryKey();
+        $table = $registeredTables[$name];
+        if ($table instanceof Table) {
+            // Check if user has delete permissions
+            if( ! current_user_can( $table->getCap()->delete_item, $objectId ) ) {
+                return '';
+            }
+            $primaryKey = $table->getDatabase()->getPrimaryKey();
             // List link + object ID + action delete
-            $url = $databaseTable->getViews()->list->getLink();
-            $url = add_query_arg( array( $primaryKey => $objectId ), $url );
-            $url = add_query_arg( array( 'custom-table-action' => 'delete' ), $url );
-            return $url;
+            if (isset($table->getViews()->list) && !empty($table->getViews()->list)) {
+                $url = $table->getViews()->list->getLink();
+                $url = add_query_arg( array( $primaryKey => $objectId ), $url );
+                $url = add_query_arg( array( 'custom-table-action' => 'delete' ), $url );
+                return $url;
+            }
         }
 
         return null;

@@ -47,9 +47,11 @@ class CMB2
         foreach( $registeredTables as $registeredTable ) {
 
             // Check if is edit page slug
-            if( $_GET['page'] === $registeredTable->getViews()->edit->get_slug() ) {
-                // Let know to this compatibility module it needs to operate
-                $cmb2Override = true;
+            if (isset($registeredTable->getViews()->edit) && !empty($registeredTable->getViews()->edit)) {
+                if( $_GET['page'] === $registeredTable->getViews()->edit->getSlug() ) {
+                    // Let know to this compatibility module it needs to operate
+                    $cmb2Override = true;
+                }
             }
         }
 

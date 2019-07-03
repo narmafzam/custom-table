@@ -86,7 +86,7 @@ class EditView extends View
 
         if (isset($_GET[$primaryKey])) {
             // Editing object
-            $this->setObjectId((int) $_GET[$primaryKey]);
+            $this->setObjectId((int)$_GET[$primaryKey]);
             $this->setObject($databaseTable->getDatabase()->get($this->getObjectId()));
             $this->editing = true;
 
@@ -389,7 +389,7 @@ class EditView extends View
 
         if ($this->isEditing()) {
             $title = $databaseTable->getLabels()->edit_item;
-            $new_url = ($databaseTable->getViews()->add ? $databaseTable->getViews()->add->getLink() : false);
+            $new_url = (isset($databaseTable->getViews()->add) && !empty($databaseTable->getViews()->add) ? $databaseTable->getViews()->add->getLink() : false);
         } else {
             $title = $databaseTable->getLabels()->add_new_item;
         }

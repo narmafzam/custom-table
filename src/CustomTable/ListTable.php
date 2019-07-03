@@ -145,7 +145,7 @@ class ListTable extends WP_List_Table
         $primary_key = $databaseTable->getDatabase()->getPrimaryKey();
         $actions = array();
 
-        if ( $databaseTable->getViews()->edit && current_user_can( $databaseTable->getCap()->edit_item, $item->$primary_key ) ) {
+        if ( isset($databaseTable->getViews()->edit) && !empty($databaseTable->getViews()->edit) && current_user_can( $databaseTable->getCap()->edit_item, $item->$primary_key ) ) {
             $actions['edit'] = sprintf(
                 '<a href="%s" aria-label="%s">%s</a>',
                 Utility::getEditLink( $databaseTable->getName(), $item->$primary_key ),
