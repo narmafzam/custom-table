@@ -532,7 +532,7 @@ class Handler
      * @param array $query_args
      * @param array $view_args
      */
-    function renderAjaxListTable( $table, $query_args = array(), $view_args = array() ) {
+    public static function renderAjaxListTable( $table, $query_args = array(), $view_args = array() ) {
         /**
          * @var Table $databaseTable
          * @var Query $query
@@ -616,7 +616,7 @@ class Handler
         }
     }
 
-    function ajaxListTableHandleRequest() {
+    public static function ajaxListTableHandleRequest() {
         global $databaseTable, $query, $listTable;
         if( ! isset( $_GET['object'] ) ) {
             wp_send_json_error();
