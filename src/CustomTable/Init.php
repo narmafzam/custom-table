@@ -9,6 +9,8 @@ class Init
         self::addAction();
         self::addHook();
         Hook::init();
+        Handler::init();
+//        Asset::init();
     }
 
     public static function addAction() {

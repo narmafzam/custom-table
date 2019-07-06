@@ -89,4 +89,13 @@ class Utility
         $str = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
         return $str;
     }
+
+    public static function getPathUrl($path, $protocol = 'http://')
+    {
+        if (defined('WP_SITEURL')) {
+            return WP_SITEURL . str_replace($_SERVER['DOCUMENT_ROOT'], '', realpath($path));
+        } else {
+            return $protocol . $_SERVER['HTTP_HOST'] . str_replace($_SERVER['DOCUMENT_ROOT'], '', realpath($path));
+        }
+    }
 }
