@@ -528,7 +528,7 @@ class Handler
     }
 
     /**
-     * @param Table $table
+     * @param string $table
      * @param array $query_args
      * @param array $view_args
      */
