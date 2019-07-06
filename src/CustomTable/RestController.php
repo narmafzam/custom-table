@@ -4,6 +4,7 @@ namespace CustomTable;
 
 use stdClass;
 use \WP_REST_Controller;
+use \WP_REST_Server;
 use \WP_Error;
 
 class RestController extends WP_REST_Controller
