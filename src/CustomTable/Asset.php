@@ -6,7 +6,12 @@ class Asset
 {
     public static function init()
     {
-        self::enqueue();
+        self::addAction();
+    }
+
+    public static function addAction()
+    {
+        do_action('admin_enqueue_scripts', 'CustomTable\\Asset::enqueue');
     }
 
     public static function enqueue()
