@@ -505,7 +505,29 @@ class Handler
         return $object;
     }
 
-    /**
+	/**
+	 * @return WP_Error
+	 */
+	public static function truncate()
+	{
+		/**
+		 * @var Table $databaseTable
+		 */
+		global $wpdb, $databaseTable;
+
+		if (!$databaseTable instanceof Table) {
+
+			return new WP_Error('invalid_custom_table_table', __('Invalid CustomTable Table object.'));
+		}
+
+		do_action('before_truncate_table', $databaseTable);
+
+		$object = $wpdb->query($wpdb->prepare("TRUNCATE TABLE {$databaseTable->getDatabase()->getTableName()}"));
+
+		do_action('after_truncate_table', $databaseTable);
+	}
+
+	/**
      * @param ListTable $listTable
      * @param $which
      */
